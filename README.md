@@ -1,6 +1,6 @@
 # table2csv
 
-Converts my [IAU](https://www.aydin.edu.tr/tr-tr/Pages/default.aspx)'s HTML schedule to a printable CSV
+Converts [IAU](https://www.aydin.edu.tr/tr-tr/Pages/default.aspx)'s HTML schedule to a printable CSV
 
 ## Usage
 
