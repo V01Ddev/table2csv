@@ -1,3 +1,5 @@
+from selenium.webdriver.common.by import By
+from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
 import sys
@@ -123,7 +125,21 @@ def csv_Gcsv(csv_input: str):
                 output_file.write(i)
 
 
+def pull_calender():
+
+    driver = webdriver.Chrome()
+    driver.get("https://ubis.aydin.edu.tr/?Pointer=Login&")
+    input("Press enter once logged in...")
+    driver.get("https://ubis.aydin.edu.tr/?Pointer=Ogrenci&Page=DersProgramim&")
+    html_table = driver.find_element(by=By.XPATH, value="//*[@id=\"DersProgrami\"]")
+    with open("input.html", "w") as input_file:
+        input_file.write(html_table.get_attribute("outerHTML"))
+    driver.quit()
+
+
 def main():
+    print("Pulling calender...")
+    pull_calender()
     csv_path = html_to_csv('input.html')
     clean_csv(csv_path)
     print("Output path:", csv_path)
