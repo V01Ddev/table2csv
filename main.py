@@ -88,9 +88,45 @@ def clean_csv(csv_path: str):
 def csv_Gcsv(csv_input: str):
     # Converts CSV to Google calender style CSV for import
     # Takes out.csv as input and outputs to GCalender.csv
-    data = []  # Array of Dictionaries
+    output_line = []  # lines to be written to csv
     csv_data = pd.read_csv(csv_input).to_dict(orient='dict')
+
     pprint(csv_data)
+
+    times_arr = list(csv_data.get("Hour").values())
+    del csv_data["Hour"]
+
+    for date in csv_data:
+
+        lessons = list(csv_data.get(date).values())
+        lessons = [x.replace(u"\xa0", u"") for x in lessons]
+
+        found_lessons = []
+        for index, lesson in enumerate(lessons):
+            if lesson != "" and lesson not in found_lessons:
+                found_lessons.append(lesson)  # Makes sure that a lesson isn't repeated
+                if times_arr:
+                    start_time = times_arr[index][0:5]
+                    end_time = times_arr[index][6:]
+                else:
+                    print(f"Times columns not found...")
+                    exit()
+
+                for c in range(index + 1, len(lessons)):
+                    # If lesson is split into two parts, it will be one big block... Known edge case ig
+                    if lessons[c] == lesson:
+                        end_time = times_arr[c][6:]
+                print("-------")
+                print(date.split(' ')[1], lesson, start_time, end_time)
+                print("-------")
+                d = date.split(' ')[1]  # date without day bs
+                output_line.append(f"{lesson},{d},{start_time},{end_time},False\n")
+
+        # Again writing CSV manually because I'm a absolute fucking machine...
+        with open('GCalender.csv', 'w') as output_file:
+            output_file.write("Subject,Start Date,Start Time,End Time,All Day Event\n")
+            for i in output_line:
+                output_file.write(i)
 
 
 def main():
