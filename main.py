@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from pprint import pprint
 import pandas as pd
 import sys
 import os
@@ -82,7 +81,7 @@ def clean_csv(csv_path: str):
     # Writing out data
     with open(csv_path, 'w') as file:
         for i in new_data:
-            file.write(i)
+            file.write(i.replace(', ', ','))
 
 
 def csv_Gcsv(csv_input: str):
@@ -91,15 +90,12 @@ def csv_Gcsv(csv_input: str):
     output_line = []  # lines to be written to csv
     csv_data = pd.read_csv(csv_input).to_dict(orient='dict')
 
-    pprint(csv_data)
-
     times_arr = list(csv_data.get("Hour").values())
     del csv_data["Hour"]
 
     for date in csv_data:
 
         lessons = list(csv_data.get(date).values())
-        lessons = [x.replace(u"\xa0", u"") for x in lessons]
 
         found_lessons = []
         for index, lesson in enumerate(lessons):
@@ -116,9 +112,7 @@ def csv_Gcsv(csv_input: str):
                     # If lesson is split into two parts, it will be one big block... Known edge case ig
                     if lessons[c] == lesson:
                         end_time = times_arr[c][6:]
-                print("-------")
-                print(date.split(' ')[1], lesson, start_time, end_time)
-                print("-------")
+
                 d = date.split(' ')[1]  # date without day bs
                 output_line.append(f"{lesson},{d},{start_time},{end_time},False\n")
 
