@@ -124,6 +124,8 @@ def csv_Gcsv(csv_input: str):
             for i in output_line:
                 output_file.write(i)
 
+    return "GCalender.csv"
+
 
 def pull_calender():
 
@@ -144,8 +146,8 @@ def main():
     clean_csv(csv_path)
     print("Output path:", csv_path)
 
-    csv_Gcsv(csv_path)
-    print("Google Calender output path: GCalender.csv")
+    Gcsv_path = csv_Gcsv(csv_path)
+    print("Google Calender output path:", Gcsv_path)
 
 
 if __name__ == "__main__":
