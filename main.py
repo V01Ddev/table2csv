@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from pprint import pprint
 import pandas as pd
 import sys
 import os
@@ -81,14 +82,24 @@ def clean_csv(csv_path: str):
     # Writing out data
     with open(csv_path, 'w') as file:
         for i in new_data:
-            print(i)
             file.write(i)
+
+
+def csv_Gcsv(csv_input: str):
+    # Converts CSV to Google calender style CSV for import
+    # Takes out.csv as input and outputs to GCalender.csv
+    data = []  # Array of Dictionaries
+    csv_data = pd.read_csv(csv_input).to_dict(orient='dict')
+    pprint(csv_data)
 
 
 def main():
     csv_path = html_to_csv('input.html')
     clean_csv(csv_path)
     print("Output path:", csv_path)
+
+    print("Converting CSV to Google Calender CSV")
+    csv_Gcsv(csv_path)
 
 
 if __name__ == "__main__":
