@@ -90,7 +90,7 @@ def csv_Gcsv(csv_input: str):
     # Converts CSV to Google calender style CSV for import
     # Takes out.csv as input and outputs to GCalender.csv
     output_line = []  # lines to be written to csv
-    csv_data = pd.read_csv(csv_input).to_dict(orient='dict')
+    csv_data = pd.read_csv(csv_input, keep_default_na=False).to_dict(orient='dict')
 
     times_arr = list(csv_data.get("Hour").values())
     del csv_data["Hour"]
