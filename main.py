@@ -128,8 +128,8 @@ def main():
     clean_csv(csv_path)
     print("Output path:", csv_path)
 
-    print("Converting CSV to Google Calender CSV")
     csv_Gcsv(csv_path)
+    print("Google Calender output path: GCalender.csv")
 
 
 if __name__ == "__main__":
