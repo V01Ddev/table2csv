@@ -46,6 +46,8 @@ def html_to_csv(input_path: str):
                 continue
         data.append(sub_data)
 
+    os.remove(input_path)
+
     dataFrame = pd.DataFrame(data=data, columns=list_header)
     dataFrame.to_csv('out.csv', index=False)
     return "out.csv"
@@ -130,12 +132,17 @@ def csv_Gcsv(csv_input: str):
 def pull_calender():
 
     driver = webdriver.Chrome()
+
     driver.get("https://ubis.aydin.edu.tr/?Pointer=Login&")
     input("Press enter once logged in...")
+
     driver.get("https://ubis.aydin.edu.tr/?Pointer=Ogrenci&Page=DersProgramim&")
+    input("Switch to the calender you want to save and press enter...")
+
     html_table = driver.find_element(by=By.XPATH, value="//*[@id=\"DersProgrami\"]")
     with open("input.html", "w") as input_file:
         input_file.write(html_table.get_attribute("outerHTML"))
+
     driver.quit()
 
 
