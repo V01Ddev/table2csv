@@ -1,3 +1,4 @@
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -137,7 +138,14 @@ def pull_calender():
     input("Press enter once logged in...")
 
     driver.get("https://ubis.aydin.edu.tr/?Pointer=Ogrenci&Page=DersProgramim&")
-    input("Switch to the calender you want to save and press enter...")
+    select = Select(driver.find_element(by=By.XPATH, value="//*[@id=\"cHeader\"]/select"))
+
+    for i, option in enumerate(select.options):
+        print(f"[{i + 1}] {option.text}")
+
+    cal = select.options[int(input("Select calender: ")) - 1]
+
+    select.select_by_visible_text(cal.text)
 
     html_table = driver.find_element(by=By.XPATH, value="//*[@id=\"DersProgrami\"]")
     with open("input.html", "w") as input_file:
