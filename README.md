@@ -15,3 +15,10 @@ This code is meant to be used with [IAU's UBIS](https://ubis.aydin.edu.tr/). Pur
 
 `out.csv` is perfect for spreedsheet usage. `GCalender.csv` is meant to be imported into [Google Calender](https://support.google.com/calendar/answer/37118?hl=en).
 
+## In the case that cloudflare is blocking you.
+
+1. Copy the outer html of the `DersProgrami` table.
+1. Paste the content into `input.html` at the root of this project.
+1. Go to `main.py` and comment out `pull_calender()` in the main function.
+
+This will process the html into the expected outputs.
