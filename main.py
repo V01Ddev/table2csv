@@ -25,23 +25,29 @@ def html_to_csv(input_path: str):
 
     soup = BeautifulSoup(input_data, 'html.parser')
 
-    header = soup.find_all("tbody")[0].find("tr")
+    table = soup.find("table", {"id": "DersProgrami"})
+    if table is None:
+        sys.exit("Course program table not found")
+        return None
 
-    for items in header:
+    header = table.find("tr")
+    for items in header.find_all(["th", "td"]):
         try:
-            list_header.append(items.get_text())
+            text = items.get_text("\n", strip=True).replace("\xa0", "").strip()
+            list_header.append(text)
         except Exception as e:
             print(f"Error loading some header: {e}")
             continue
 
     # for getting the data
-    HTML_data = soup.find_all("tbody")[0].find_all("tr")[1:]
+    HTML_data = table.find_all("tr")[1:]
 
     for element in HTML_data:
         sub_data = []
-        for sub_element in element:
+        for sub_element in element.find_all(["th", "td"]):
             try:
-                sub_data.append(sub_element.get_text())
+                text = sub_element.get_text(" ", strip=True).replace("\xa0", "").strip()
+                sub_data.append(text)
             except Exception as e:
                 print(f"Error loading some data: {e}")
                 continue
@@ -74,14 +80,15 @@ def clean_csv(csv_path: str):
             sd = item.split(',')
             for i in sd:
                 og_item = i
-                if '.' in i:
-                    day, date = i.split('y')
-                    fo = f"{day}y {date}"
+                if "\n" in i:
+                    day, date = i.split("\n", 1)
+                    fo = f"{day} {date}"
                     new_data[0] = new_data[0].replace(og_item, fo)
         else:
             # Adding space between time
-            new_string = item[0:5] + " " + item[5:-1] + "\n"
-            new_data[index] = new_string
+            if len(item) > 6 and item[0:2].isdigit() and item[2] == ":" and item[5] != " ":
+                new_string = item[0:5] + " " + item[5:-1] + "\n"
+                new_data[index] = new_string
 
     # Writing out data
     with open(csv_path, 'w') as file:
@@ -118,7 +125,9 @@ def csv_Gcsv(csv_input: str):
                     if lessons[c] == lesson:
                         end_time = times_arr[c][6:]
 
-                d = date.split(' ')[1]  # date without day bs
+                # Some headers don't include a day name; fall back to the whole string.
+                parts = date.split()
+                d = parts[1] if len(parts) > 1 else (parts[0] if parts else "")
                 output_line.append(f"{lesson},{d},{start_time},{end_time},False\n")
 
         # Again writing CSV manually because I'm a absolute fucking machine...
@@ -150,16 +159,23 @@ def pull_calender():
 
     select.select_by_visible_text(cal.text)
 
-    html_table = driver.find_element(by=By.XPATH, value="//*[@id=\"DersProgrami\"]")
     with open("input.html", "w") as input_file:
-        input_file.write(html_table.get_attribute("outerHTML"))
+        input_file.write(driver.page_source)
 
     driver.quit()
 
 
 def main():
-    print("Pulling calender...")
-    pull_calender()
+    print("Select input source:")
+    print("[1] Use existing input.html (manual)")
+    print("[2] Fetch via scraper (UBIS)")
+    choice = input("Choose 1 or 2: ").strip()
+
+    if choice == "2":
+        pull_calender()
+    elif choice != "1":
+        sys.exit("Invalid choice. Please run again and select 1 or 2.")
+
     csv_path = html_to_csv('input.html')
     clean_csv(csv_path)
     print("Output path:", csv_path)
